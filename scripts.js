@@ -3,17 +3,14 @@ function openApp(appName) {
         .then(response => response.json())
         .then(data => {
             if (data.url) {
-                window.open(data.url, "_blank"); // Open in a new tab
+                window.open(data.url, "_blank");
             } else {
                 console.error("Error:", data.error);
+                alert("Failed to open the app. Please try again.");
             }
         })
-        .catch(error => console.error("Error:", error));
+        .catch(error => console.error("Fetch error:", error));
 }
-fetch("https://your-app.onrender.com/streamlit/mouse_tracking") 
-fetch("https://your-app.onrender.com/streamlit/voice_assistant") 
-fetch("https://your-app.onrender.com/streamlit/screen_reader") 
-
 
 function quiz() {
   window.open("quiz.html", "_blank");
