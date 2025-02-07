@@ -19,3 +19,10 @@ function runVoiceRecognition() {
 function runScreenReader() {
     startStreamlitApp("run_streamlit_reader");
 }
+function quiz() {
+  window.open("quiz.html", "_blank");
+}
+
+function riddles() {
+  window.open("riddles.html", "_blank");
+}
