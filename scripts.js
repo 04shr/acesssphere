@@ -10,6 +10,9 @@ function openApp(appName) {
         })
         .catch(error => console.error("Error:", error));
 }
+fetch("https://your-app.onrender.com/streamlit/mouse_tracking") 
+fetch("https://your-app.onrender.com/streamlit/voice_assistant") 
+fetch("https://your-app.onrender.com/streamlit/screen_reader") 
 
 
 function quiz() {
