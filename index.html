@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Landing Page</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+  <header class="header">
+    <div class="logo">Access LINK</div>
+    <nav class="nav">
+      <span>
+        <a class="logo" href="community.html"><img src="images/com.png"></a>
+      </span>
+    </nav>
+  </header>
+   
+  <section class="hero">
+    <div class="container">
+      <h1>Empowering Abilities, Redefining Accessibility!</h1>
+      <p>Inclusive tools for effortless <span>communication</span> and <span>accessibility</span></p>
+    </div>
+  </section>
+
+  <section class="featured">
+    <div class="card">
+      <img src="images/track.jpg" alt="Landing Page Hot Tips">
+      <h2>Hands-free Mouse Tracking</h2>
+      <p>Advanced eye-tracking technology for hands-free cursor control and seamless interaction.</p>
+      <button class="signBtn" onclick="signBtn()">EXPLORE</button>
+    </div>
+
+    <div class="card">
+      <img src="images/voice-assistant.png" alt="Landing Page Hot Tips">
+      <h2>Intelligent Screen Reader</h2>
+      <p>Comprehensive screen reading technology to assist visually impaired individuals with navigation and understanding.</p>
+      <button class="signBtn" onclick="readerBtn()" id="trackMouse">EXPLORE</button>
+    </div>
+
+    <div class="card">
+      <img src="images/vm.png" alt="Landing Page Hot Tips">
+      <h2>Image and Document analyser</h2>
+      <p>An AI tool that extracts and interprets visual content, making images and documents accessible to visually impaired individuals.</p>
+      <button class="signBtn" onclick="voiceBtn()">EXPLORE</button>
+    </div>
+    
+  </section>
+
+  <script>
+    function signBtn() {
+      $.get("http://localhost:5000/run_streamlit", function(data) {
+        if (data.status === "success") {
+          alert("Streamlit app is now running!");
+          window.open('http://localhost:8501', '_blank');  
+        } else {
+          alert("Error: " + data.message);
+        }
+      });
+    }
+
+    function voiceBtn() {
+      $.get("http://localhost:5000/run_streamlit_voice", function(data) {
+        if (data.status === "success") {
+          alert("Streamlit voice app is now running!");
+          window.open('http://localhost:5001', '_blank'); 
+        } else {
+          alert("Error: " + data.message);
+        }
+      });
+    }
+
+    function readerBtn() {
+      $.get("http://localhost:5000/run_streamlit_reader", function(data) {
+        if (data.status === "success") {
+          alert("Streamlit reader app is now running!");
+          window.open('http://localhost:5002', '_blank');  
+        } else {
+          alert("Error: " + data.message);
+        }
+      });
+    }
+  </script>
+
+  <script src="scripts.js"></script>
+</body>
+</html>

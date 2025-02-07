@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voice-Controlled Riddles</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f0f4f8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .container {
+      text-align: center;
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      max-width: 500px;
+      width: 100%;
+    }
+    h1 {
+      color: #333;
+    }
+    .riddle {
+      font-size: 1.2rem;
+      margin: 20px 0;
+    }
+    .btn {
+      padding: 10px 20px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 5px;
+      background: #007bff;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .btn:hover {
+      background: #0056b3;
+    }
+    .status, .user-answer {
+      margin-top: 20px;
+      font-size: 1rem;
+      color: #007bff;
+    }
+    .user-answer {
+      font-weight: bold;
+    }
+    .score {
+      font-size: 1.2rem;
+      margin-top: 30px;
+      color: green;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Voice-Controlled Riddles</h1>
+    <p class="riddle">I speak without a mouth and hear without ears. What am I?</p>
+    <button class="btn" id="startBtn">Start Listening</button>
+    <p class="user-answer" id="userAnswer">Your answer will appear here.</p>
+    <p class="status" id="status">Click "Start Listening" and speak your answer.</p>
+    <p class="score" id="score">Score: 0</p>
+  </div>
+
+  <script>
+    const riddles = [
+      { 
+        question: "I speak without a mouth and hear without ears. What am I?", 
+        answer: "echo" 
+      },
+      { 
+        question: "What has to be broken before you can use it?", 
+        answer: "egg" 
+      },
+      { 
+        question: "The more of me you take, the more you leave behind. What am I?", 
+        answer: "footsteps" 
+      },
+      { 
+        question: "What has a heart that doesn't beat?", 
+        answer: "artichoke" 
+      },
+      { 
+        question: "What can travel around the world while staying in the same corner?", 
+        answer: "stamp" 
+      }
+    ];
+
+    let currentRiddleIndex = 0;
+    let score = 0;
+    const riddleElement = document.querySelector('.riddle');
+    const statusElement = document.getElementById('status');
+    const userAnswerElement = document.getElementById('userAnswer');
+    const scoreElement = document.getElementById('score');
+    const startBtn = document.getElementById('startBtn');
+
+    // Speech recognition instance
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+
+    function askRiddle() {
+      const riddle = riddles[currentRiddleIndex];
+      riddleElement.textContent = riddle.question;
+      statusElement.textContent = "Click 'Start Listening' and speak your answer.";
+      userAnswerElement.textContent = "Your answer will appear here.";
+      scoreElement.textContent = `Score: ${score}`;
+    }
+
+    function updateScore(isCorrect) {
+  if (isCorrect) {
+    score++;
+    statusElement.textContent = "Correct! Moving to the next riddle...";
+  } else {
+    statusElement.textContent = "Wrong! Try again.";
+  }
+
+  scoreElement.textContent = `Score: ${score}`;
+
+  // Move to next riddle after a delay
+  setTimeout(() => {
+    currentRiddleIndex = (currentRiddleIndex + 1) % riddles.length;
+    askRiddle();
+  }, 3000); // 3000ms = 3 seconds
+}
+    
+    recognition.onresult = (event) => {
+      const userAnswer = event.results[0][0].transcript.toLowerCase().trim();
+      userAnswerElement.textContent = `You said: "${userAnswer}"`;
+      
+      const correctAnswer = riddles[currentRiddleIndex].answer.toLowerCase();
+      const isCorrect = userAnswer === correctAnswer;
+      
+      updateScore(isCorrect);
+      
+      // Stop listening after each attempt
+      recognition.stop();
+    };
+
+    recognition.onend = () => {
+      statusElement.textContent = "Stopped listening. Click 'Start Listening' to try again.";
+    };
+
+    recognition.onerror = (event) => {
+      statusElement.textContent = `Error: ${event.error}. Please try again.`;
+    };
+
+    startBtn.addEventListener('click', () => {
+      recognition.start();
+      statusElement.textContent = "Listening...";
+    });
+
+    // Initialize the first riddle
+    askRiddle();
+  </script>
+</body>
+</html>

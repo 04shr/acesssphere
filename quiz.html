@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fun Quizzes</title>
+    <link rel="stylesheet" href="quiz.css">
+</head>
+<body>
+    <div class="quiz-container">
+        <h1>Fun Quizzes</h1>
+        <p class="quiz-intro">Test your knowledge about accessibility and inclusivity!</p>
+        
+        <div id="quiz">
+            <div class="question">
+                <p id="question-text">Which is an example of assistive technology?</p>
+                <ul class="options">
+                    <li id="option1">Screen Reader</li>
+                    <li id="option2">Smartphone</li>
+                    <li id="option3">Video Game Console</li>
+                    <li id="option4">Television</li>
+                </ul>
+            </div>
+            <button id="voice-answer-btn">Answer with Voice</button>
+            <div id="feedback"></div>
+            <div id="spoken-text-container">
+                <p><strong>You are saying:</strong> <span id="spoken-text">...</span></p>
+            </div>
+        </div>
+
+        <button id="next-question-btn" style="display: none;">Next Question</button>
+    </div>
+
+    <script>
+        // Quiz Data
+        const quizData = [
+    {
+        question: "Which is an example of assistive technology?",
+        options: ["Screen Reader", "Smartphone", "Video Game Console", "Television"],
+        correctAnswer: "screen reader",
+        synonyms: ["reader", "assistive screen reader"]
+    },
+    {
+        question: "What does a screen reader do?",
+        options: ["Converts text to speech", "Displays videos", "Increases screen brightness", "Plays music"],
+        correctAnswer: "converts text to speech",
+        synonyms: ["text to speech", "reads text aloud", "text speech"]
+    },
+    {
+        question: "Which feature helps the hearing impaired in videos?",
+        options: ["Closed Captions", "Brightness Control", "Fullscreen Mode", "Volume Control"],
+        correctAnswer: "closed captions",
+        synonyms: ["subtitles", "captions"]
+    },
+    {
+        question: "What is an example of inclusive design?",
+        options: ["Ramps for wheelchairs", "Bright lighting", "Fast internet", "Expensive devices"],
+        correctAnswer: "ramps for wheelchairs",
+        synonyms: ["wheelchair ramps", "ramp for accessibility"]
+    },
+    {
+        question: "What does WCAG stand for?",
+        options: ["Web Content Accessibility Guidelines", "World Coding and Gaming", "Wireless Communication and Access", "Wide Communication Accessibility Group"],
+        correctAnswer: "web content accessibility guidelines",
+        synonyms: ["wcag", "accessibility guidelines"]
+    },
+    {
+        question: "What is a braille display?",
+        options: ["A tactile device for the visually impaired", "A bright screen", "A large monitor", "A screen magnifier"],
+        correctAnswer: "a tactile device for the visually impaired",
+        synonyms: ["braille device", "tactile display", "braille tactile"]
+    },
+    {
+        question: "Which device helps with mobility impairments?",
+        options: ["Wheelchair", "Tablet", "Smartphone", "Television"],
+        correctAnswer: "wheelchair",
+        synonyms: ["mobility wheelchair", "mobility device"]
+    },
+    {
+        question: "What type of software converts speech to text?",
+        options: ["Speech Recognition", "Video Editing", "File Manager", "Text Editor"],
+        correctAnswer: "speech recognition",
+        synonyms: ["voice to text", "speech to text"]
+    },
+    {
+        question: "What is the purpose of alt text in images?",
+        options: ["Describe images for screen readers", "Increase image size", "Add color to images", "Make images clickable"],
+        correctAnswer: "describe images for screen readers",
+        synonyms: ["alt text", "image description"]
+    },
+    {
+        question: "Which of these is NOT an assistive technology?",
+        options: ["Television", "Braille Keyboard", "Hearing Aid", "Screen Magnifier"],
+        correctAnswer: "television",
+        synonyms: ["non-assistive television"]
+    },
+    {
+        question: "What is the primary function of a hearing aid?",
+        options: ["Amplify sound", "Translate languages", "Record audio", "Improve speech"],
+        correctAnswer: "amplify sound",
+        synonyms: ["sound amplifier", "amplifies sound"]
+    },
+    {
+        question: "What is a common accessibility feature on websites?",
+        options: ["Keyboard navigation", "Music autoplay", "Infinite scrolling", "Pop-up ads"],
+        correctAnswer: "keyboard navigation",
+        synonyms: ["keyboard accessibility", "navigate with keyboard"]
+    },
+    {
+        question: "Which technology assists individuals with visual impairments in reading printed text?",
+        options: ["OCR (Optical Character Recognition)", "Screen Reader", "Magnifying Glass", "Speech Recognition"],
+        correctAnswer: "ocr (optical character recognition)",
+        synonyms: ["ocr", "character recognition"]
+    },
+    {
+        question: "What is the purpose of a tactile paving?",
+        options: ["Guide visually impaired individuals", "Measure road temperature", "Absorb road noise", "Reduce accidents"],
+        correctAnswer: "guide visually impaired individuals",
+        synonyms: ["tactile guidance", "visually impaired paving"]
+    },
+    {
+        question: "What is an accessibility feature on modern smartphones?",
+        options: ["VoiceOver", "High Refresh Rate", "Quad Cameras", "Gaming Mode"],
+        correctAnswer: "voiceover",
+        synonyms: ["screen reader", "voice over"]
+    },
+    {
+        question: "Which law in the United States mandates digital accessibility?",
+        options: ["Americans with Disabilities Act (ADA)", "Freedom of Information Act", "Affordable Care Act", "No Child Left Behind Act"],
+        correctAnswer: "americans with disabilities act",
+        synonyms: ["ada", "disabilities act"]
+    },
+    {
+        question: "What is the main function of a screen magnifier?",
+        options: ["Zoom text and images", "Reduce screen brightness", "Highlight keywords", "Improve screen resolution"],
+        correctAnswer: "zoom text and images",
+        synonyms: ["text zoom", "image magnification"]
+    },
+    {
+        question: "What is the role of sign language interpreters?",
+        options: ["Translate spoken language to sign language", "Provide captions in videos", "Enhance speech clarity", "Improve hearing ability"],
+        correctAnswer: "translate spoken language to sign language",
+        synonyms: ["sign language translation", "language interpreter"]
+    },
+    {
+        question: "What is one feature of an accessible PDF?",
+        options: ["Tagged content for screen readers", "Locked content", "Watermarking", "Low-resolution images"],
+        correctAnswer: "tagged content for screen readers",
+        synonyms: ["tagged pdf", "accessible pdf"]
+    },
+    {
+        question: "Which software is often used to enable closed captions during live presentations?",
+        options: ["Real-time captioning software", "Video editing software", "Music software", "Photo editing software"],
+        correctAnswer: "real-time captioning software",
+        synonyms: ["captioning software", "live captions"]
+    }
+];
+
+let currentQuestionIndex = 0;
+let score = 0;  // To track the score
+
+// DOM Elements
+const questionText = document.getElementById('question-text');
+const optionsList = document.querySelector('.options');
+const feedback = document.getElementById('feedback');
+const spokenTextElement = document.getElementById('spoken-text');
+const nextQuestionBtn = document.getElementById('next-question-btn');
+const voiceAnswerBtn = document.getElementById('voice-answer-btn');
+
+// Load Question
+function loadQuestion(index) {
+    const question = quizData[index];
+    questionText.textContent = question.question;
+    const options = optionsList.children;
+    for (let i = 0; i < options.length; i++) {
+        options[i].textContent = question.options[i];
+    }
+    feedback.textContent = '';
+    spokenTextElement.textContent = '...';
+    nextQuestionBtn.style.display = 'none';
+    voiceAnswerBtn.style.display = 'inline-block';
+}
+
+// Initialize Speech Recognition
+voiceAnswerBtn.addEventListener('click', function () {
+    if (!('webkitSpeechRecognition' in window)) {
+        alert("Your browser does not support speech recognition. Please update or use a supported browser.");
+        return;
+    }
+
+    const recognition = new webkitSpeechRecognition();
+    recognition.lang = 'en-US';
+    recognition.interimResults = true;
+
+    // Clear previous feedback
+    feedback.textContent = '';
+    spokenTextElement.textContent = '...';
+
+    recognition.onstart = () => {
+        console.log("Voice recognition started. Please speak your answer...");
+    };
+
+    recognition.onresult = (event) => {
+        let transcript = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+            transcript += event.results[i][0].transcript;
+        }
+        spokenTextElement.textContent = transcript;
+
+        if (event.results[event.results.length - 1].isFinal) {
+            checkVoiceAnswer(transcript);
+        }
+    };
+
+    recognition.onerror = (event) => {
+        if (event.error === 'no-speech') {
+            feedback.textContent = "No speech detected. Please try speaking again.";
+        } else {
+            feedback.textContent = "Error: " + event.error;
+        }
+        feedback.style.color = "red";
+    };
+
+    recognition.onspeechend = () => {
+        recognition.stop();
+    };
+
+    recognition.start();
+});
+
+// Function to check the voice answer with keyword matching
+function checkVoiceAnswer(answer) {
+    const currentQuestion = quizData[currentQuestionIndex];
+    const correctAnswer = currentQuestion.correctAnswer.toLowerCase();
+    const synonyms = currentQuestion.synonyms || []; // Use synonyms if provided
+
+    const allAcceptedAnswers = [correctAnswer, ...synonyms]; // Combine correct answer with synonyms
+    const isCorrect = allAcceptedAnswers.some(correct => answer.toLowerCase().includes(correct));
+
+    const feedback = document.getElementById('feedback');
+    if (isCorrect) {
+        feedback.textContent = "Correct!";
+        feedback.style.color = "green";
+        score++;  // Increment score for correct answer
+    } else {
+        feedback.textContent = `Oops! That's not correct. You said: "${answer}".`;
+        feedback.style.color = "red";
+    }
+
+    voiceAnswerBtn.style.display = 'none';
+    nextQuestionBtn.style.display = 'inline-block';
+}
+
+// Load next question
+nextQuestionBtn.addEventListener('click', function () {
+    currentQuestionIndex++;
+    if (currentQuestionIndex < quizData.length) {
+        loadQuestion(currentQuestionIndex);
+    } else {
+        // Quiz Completed: Show Final Score
+        questionText.textContent = "Quiz Completed! Well done!";
+        optionsList.style.display = 'none';
+        voiceAnswerBtn.style.display = 'none';
+        nextQuestionBtn.style.display = 'none';
+
+        // Display the score at the end
+        const scoreText = `Your final score is ${score} out of ${quizData.length}!`;
+        feedback.textContent = scoreText;
+        feedback.style.color = "#FFD700";  // Golden color for the score
+    }
+});
+
+// Load the first question on page load
+loadQuestion(currentQuestionIndex);
+    </script>
+
+    <style>
+        /* Global Styles */
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #2E0249, #44056E);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Quiz Container */
+.quiz-container {
+    max-width: 400px;
+    margin: auto;
+    padding: 20px 30px;
+    text-align: center;
+    border-radius: 20px;
+    background: linear-gradient(145deg, #3B0264, #220440);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Headings */
+h1 {
+    font-size: 28px;
+    margin-bottom: 10px;
+    color: #d5cddd;
+}
+
+.quiz-intro {
+    font-size: 16px;
+    margin-bottom: 20px;
+    color: #D3B8EE;
+}
+
+/* Options List */
+ul.options {
+    list-style: none;
+    padding: 0;
+}
+
+ul.options li {
+    margin: 10px 0;
+    padding: 15px 20px;
+    border: 1px solid #5C1D86;
+    border-radius: 10px;
+    background: whitesmoke;
+    color: #5C1D86;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+ul.options li:hover {
+    background: #ffffff;
+    color: white;
+    transform: scale(1.05);
+}
+
+/* Buttons */
+button {
+    padding: 12px 20px;
+    margin-top: 20px;
+    background-color: #7033B5;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+button:hover {
+    background-color: #9C47DF;
+    transform: scale(1.05);
+}
+
+/* Feedback Section */
+#feedback {
+    margin-top: 15px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* Voice Answer Section */
+#spoken-text-container {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #C3A6E4;
+}
+
+#next-question-btn {
+    display: none;
+}
+
+
+    </style>
+</body>
+</html>
