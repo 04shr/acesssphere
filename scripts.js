@@ -1,16 +1,21 @@
-function quiz() {
-    window.open("quiz.html", "_blank");
+const API_BASE_URL = "http://localhost:5000";
+
+function startStreamlitApp(endpoint) {
+    fetch(`${API_BASE_URL}/${endpoint}`)
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(error => console.error("Error:", error));
 }
 
-function riddles() {
-    window.open("riddles.html", "_blank");
+// Call functions when buttons are clicked
+function runMouseTracking() {
+    startStreamlitApp("run_streamlit");
 }
 
-// Change URL for Render Deployment
-const API_BASE_URL = "https://acesssphere.onrender.com"; // Update if different
+function runVoiceRecognition() {
+    startStreamlitApp("run_streamlit_voice");
+}
 
-// Example API call to Flask backend
-fetch(`${API_BASE_URL}/run_streamlit`)
-    .then(response => response.json())
-    .then(data => console.log("Backend Response:", data))
-    .catch(error => console.error("Error:", error));
+function runScreenReader() {
+    startStreamlitApp("run_streamlit_reader");
+}
