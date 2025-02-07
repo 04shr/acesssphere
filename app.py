@@ -1,36 +1,30 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify
 from flask_cors import CORS
 import subprocess
-import time
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})  # Enable access from any device
 
-# Function to start Streamlit apps and wait for them to become available
-def start_streamlit(script_name, port):
+# Function to start a Streamlit app
+def start_streamlit_app(script_name, port):
     try:
-        subprocess.Popen(
-            ['streamlit', 'run', script_name, '--server.port', str(port), '--server.headless', 'true'],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
-        )
-        time.sleep(3)  # Wait for Streamlit to start
+        subprocess.Popen(["streamlit", "run", script_name, "--server.port", str(port), "--server.headless", "true"])
         return jsonify({"status": "success", "message": f"{script_name} is running on port {port}"})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)})
 
-# Routes to start each Streamlit app
+# Routes to launch different Streamlit apps
 @app.route('/run_streamlit', methods=['GET'])
 def run_streamlit():
-    return start_streamlit('hands_free_mouse.py', 5001)
+    return start_streamlit_app("hands_free_mouse.py", 8501)
 
 @app.route('/run_streamlit_voice', methods=['GET'])
 def run_streamlit_voice():
-    return start_streamlit('voice_recognition.py', 5002)
+    return start_streamlit_app("voice_recognition.py", 8502)
 
 @app.route('/run_streamlit_reader', methods=['GET'])
 def run_streamlit_reader():
-    return start_streamlit('screen_reader.py', 5003)
+    return start_streamlit_app("screen_reader.py", 8503)
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    app.run(debug=True, host="0.0.0.0", port=5000)  # Make Flask accessible from any device
