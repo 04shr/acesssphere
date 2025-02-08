@@ -29,59 +29,57 @@
       <img src="images/track.jpg" alt="Landing Page Hot Tips">
       <h2>Hands-free Mouse Tracking</h2>
       <p>Advanced eye-tracking technology for hands-free cursor control and seamless interaction.</p>
-      <button class="signBtn" onclick="openApp('hands_free_mouse')">EXPLORE</button>
+      <button class="signBtn" onclick="signBtn()">EXPLORE</button>
     </div>
 
     <div class="card">
       <img src="images/voice-assistant.png" alt="Landing Page Hot Tips">
       <h2>Intelligent Screen Reader</h2>
       <p>Comprehensive screen reading technology to assist visually impaired individuals with navigation and understanding.</p>
-      <button class="signBtn" onclick="openApp('voice_recognition')" id="trackMouse">EXPLORE</button>
+      <button class="signBtn" onclick="readerBtn()" id="trackMouse">EXPLORE</button>
     </div>
 
     <div class="card">
       <img src="images/vm.png" alt="Landing Page Hot Tips">
       <h2>Image and Document analyser</h2>
       <p>An AI tool that extracts and interprets visual content, making images and documents accessible to visually impaired individuals.</p>
-      <button class="signBtn" onclick="openApp('screen_reader')">EXPLORE</button>
+      <button class="signBtn" onclick="voiceBtn()">EXPLORE</button>
     </div>
     
   </section>
 
   <script>
+    const API_BASE_URL = "https://acesssphere.onrender.com";  // Your Render Flask API URL
+  
+    function openStreamlit(endpoint) {
+      fetch(`${API_BASE_URL}/${endpoint}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === "success") {
+            window.open(data.url, '_blank');  // Open the running Streamlit app
+          } else {
+            alert("Error: " + data.message);
+          }
+        })
+        .catch(error => {
+          console.error("Fetch error:", error);
+          alert("Could not connect to server.");
+        });
+    }
+  
     function signBtn() {
-      $.get("http://localhost:5000/run_streamlit", function(data) {
-        if (data.status === "success") {
-          alert("Streamlit app is now running!");
-          window.open('http://localhost:8501', '_blank');  
-        } else {
-          alert("Error: " + data.message);
-        }
-      });
+      openStreamlit("run_streamlit");
     }
-
+  
     function voiceBtn() {
-      $.get("http://localhost:5000/run_streamlit_voice", function(data) {
-        if (data.status === "success") {
-          alert("Streamlit voice app is now running!");
-          window.open('http://localhost:5001', '_blank'); 
-        } else {
-          alert("Error: " + data.message);
-        }
-      });
+      openStreamlit("run_streamlit_voice");
     }
-
+  
     function readerBtn() {
-      $.get("http://localhost:5000/run_streamlit_reader", function(data) {
-        if (data.status === "success") {
-          alert("Streamlit reader app is now running!");
-          window.open('http://localhost:5002', '_blank');  
-        } else {
-          alert("Error: " + data.message);
-        }
-      });
+      openStreamlit("run_streamlit_reader");
     }
   </script>
+  
 
   <script src="scripts.js"></script>
 </body>
